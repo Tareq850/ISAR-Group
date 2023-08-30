@@ -1,1 +1,3 @@
-
+target 'Runner' do
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '8.15.0'
+end
