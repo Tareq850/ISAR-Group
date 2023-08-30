@@ -1,5 +1,1 @@
-platform :ios, '11.0'
 
-target 'Runner' do
-  # إعدادات Pod للهدف 'Runner'
-end
