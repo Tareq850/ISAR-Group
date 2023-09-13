@@ -35,7 +35,7 @@ class OneConState extends State<OneCon> {
           title: Text(widget.info['course_name']),
           backgroundColor: Theme.of(context).colorScheme.primary,
         ),
-        body: widget.user['type'] == 'مدير'
+        body: widget.user['type'] == 'مدير' || widget.user['type'] == 'معلم'
             ? buildConferenceList(context, Prov, dateTime)
             : buildConferenceList(context, Prov, dateTime),
       ),
@@ -68,7 +68,7 @@ class OneConState extends State<OneCon> {
               if (widget.info['course_name'] == conferenceData['course_name'] &&
                   widget.info['date'] == conferenceData['date'] &&
                   widget.info['start'] == conferenceData['start']) {
-                if(widget.user['type'] == 'مدير'){
+                if(widget.user['type'] == 'مدير' || widget.user['type'] == 'معلم'){
                   return buildConferenceItem(context, i, conferenceData, Prov, dateTime);
                 }
                 else {

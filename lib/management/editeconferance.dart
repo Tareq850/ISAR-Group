@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 import '../provider.dart';
-
+import 'package:http/http.dart' as http;
 class EditConferance extends StatefulWidget{
   final edit;
   final id;
@@ -23,6 +26,41 @@ class EditConferanceState extends State<EditConferance> {
   String c_name = "";
   String title = "";
   String body = "";
+  final String _serverToken =
+      "AAAAXxgI6AE:APA91bFXM8VbyTERv879mnyxu1Mx3Gzoe9pmWroLPXxBoXZmJXDbxvjGtuMlm70pk2nl63c_V6pAcIASvlKdGCAcdSY4kXA_tRewDjKAzRIJbri-44xHMiXBLDNCI_saXcNeVZs6IvuH";
+  String titles = "";
+  String bodys = "";
+  String tobic = "";
+  Future<void> _sendNotification(String title, String body, String type) async {
+    final response = await http.post(
+      Uri.parse("https://fcm.googleapis.com/fcm/send"),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'key=$_serverToken',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          'notification': <String, dynamic>{
+            'body': body,
+            'title': title,
+          },
+          'priority': 'high',
+          'data': <String, dynamic>{
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'name': 'test',
+            'lastname': 'tareq',
+          },
+          'to': '/topics/$type',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      print("Notification sent successfully");
+    } else {
+      print("Failed to send notification");
+    }
+  }
   GlobalKey<FormState> forms = GlobalKey<FormState>();
   DateTimeRange daterange = DateTimeRange(
       start: DateTime.now(),
@@ -244,6 +282,12 @@ class EditConferanceState extends State<EditConferance> {
                                 );
                                 data.save();
                                 Prov.update_Confecance(widget.id, c_name, te_name, _startTime.format(context), _endTime.format(context), startday);
+                                QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+                                    .collection('courses')
+                                    .where('course_name', isEqualTo: c_name)
+                                    .get();
+                                var courseID = querySnapshot.docs.first.id;
+                                _sendNotification(c_name, "تاريخ الجلسة $startday الوقت ${_startTime.format(context)} ", courseID.toString().trim());
                                 Navigator.of(context).pushReplacementNamed('home');
                                 var bar = const SnackBar(content: Text("تم اجراء التعديلات"));
                                 ScaffoldMessenger.of(context).showSnackBar(bar);
@@ -258,7 +302,7 @@ class EditConferanceState extends State<EditConferance> {
                         color: Theme.of(context).colorScheme.primary,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 100, vertical: 10),
-                        child: const Text("تعديل الدورة", style: TextStyle(
+                        child: const Text("تعديل الجلسة", style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold

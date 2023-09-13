@@ -1,59 +1,175 @@
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:zego_uikit/zego_uikit.dart';
 import 'package:zego_uikit_prebuilt_video_conference/zego_uikit_prebuilt_video_conference.dart';
 import 'abacus.dart';
 import 'draw.dart';
-
+import 'package:file_picker/file_picker.dart';
+import 'package:open_app_file/open_app_file.dart';
+import 'package:ed_screen_recorder/ed_screen_recorder.dart';
+import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 class VideoConferencePage extends StatefulWidget {
   final conferenceID;
   final user;
   final id;
   final course_id;
-
   const VideoConferencePage(this.conferenceID, this.user, this.id, this.course_id, {Key? key})
       : super(key: key);
-
   @override
   State<VideoConferencePage> createState() => VideoConferencePageState();
 }
 class VideoConferencePageState extends State<VideoConferencePage> {
   List<IconData> customIcons = [
     Icons.phone,
-    Icons.cookie,
-    Icons.speaker,
-    Icons.air,
-    Icons.blender,
-    Icons.file_copy,
-    Icons.place,
-    Icons.phone_android,
-    Icons.phone_iphone,
+    Icons.draw_outlined,
+    Icons.videogame_asset_sharp,
+    Icons.emergency_recording,
+    Icons.file_open,
   ];
+  late PDFDocument document;
+  String filePath = '';
+  Future Files() async{
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      setState(() async {
+        String? filePath = file.path;
+        document = await PDFDocument.fromAsset(filePath!);
+        await OpenAppFile.open(filePath);
+      });
+      print(file.path);
+    } else {
+      // User canceled the picker
+    }
+  }
+  bool isFullscreen = true;
+  var _response;
+  // use this to control whether to call the method to enable full-screen mode.
+  ZegoUIKitPrebuiltVideoConferenceController controller =
+  ZegoUIKitPrebuiltVideoConferenceController();
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+  Future<void> startRecord({required String fileName}) async {
+     Directory? tempDir = await getApplicationSupportDirectory();
+     String tempPath = tempDir.path;
+     try{
+       print(tempPath);
+       print(".....................................................00000626.............");
+       var startrecord = await EdScreenRecorder().startRecordScreen(fileExtension: "mp4",
+           fileName: fileName, audioEnable: true,dirPathToSave: tempPath,  videoBitrate: 10, addTimeCode: true);
+       setState(() {
+         _response = startrecord;
+       });
+     }on PlatformException {
+       print("......................................................525626.............");
+     }
+
+  }
+  Future<void> stopRecord() async {
+    try{
+      print(".......0000000000000.................................525626.............");
+      print(_response);
+      var stopResponse = await EdScreenRecorder().stopRecord();
+
+      setState(() {
+        _response = stopResponse;
+      });
+    }on PlatformException {
+      print("Error: An error occurred while stopping recording.......................");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-
       child: ZegoUIKitPrebuiltVideoConference(
         appID: 454540219, // Fill in the appID that you get from ZEGOCLOUD Admin Console.
         appSign: "c329bbbcd8db9dd6d6e3a48584eb344ee4f9cc04dc67c139369251f5ad0be412", // Fill in the appSign that you get from ZEGOCLOUD Admin Console.
         userID: widget.id.toString(),
         userName: widget.user['name'].toString(),
         conferenceID: widget.course_id.toString(),
-        config: ZegoUIKitPrebuiltVideoConferenceConfig(
+        config: (
+            ZegoUIKitPrebuiltVideoConferenceConfig()
+          ..onLeaveConfirmation = (BuildContext context) async {
+            return await showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: AlertDialog(
+                      backgroundColor: Colors.green[900]!.withOpacity(0.9),
+                      title: const Text("مغادرة الجلسة",
+                          style: TextStyle(color: Colors.white70)),
+                      content: const Text(
+                          "أنت على وشك مغادرة الجلسة!",
+                          style: TextStyle(color: Colors.white70)),
+                      actions: [
+                        ElevatedButton(
+                          child: const Text("تراجع",
+                              style: TextStyle(color: Colors.red)),
+                          onPressed: () => Navigator.of(context).pop(false),
+                        ),
+                        ElevatedButton(
+                          child: const Text("تأكيد"),
+                          onPressed: () => Navigator.of(context).pop(true),
+                        ),
+                      ],
+                    ),
+                  );
+                });}
+          ..audioVideoViewConfig.foregroundBuilder =
+              (context, size, user, extraInfo) {
+            // Here is the full-screen mode button.
+            return Container(
+              child: OutlinedButton(
+                  onPressed: () {
+                    isFullscreen = !isFullscreen;
+                    controller.showScreenSharingViewInFullscreenMode(
+                        user?.id ?? '',
+                        isFullscreen); // Call this to decide whether to show the shared screen in full-screen mode.
+                  },
+                  child: const Text("")),
+            );
+          }
 
-          avatarBuilder: (BuildContext context, Size size, ZegoUIKitUser? user, Map extraInfo) {
-            return user != null
-                ? Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-              ),
-            )
-                : const SizedBox();
-          },
-          bottomMenuBarConfig: ZegoBottomMenuBarConfig(
-            maxCount: 5,
-            extendButtons: [
+          ..layout = (ZegoLayout.gallery(
+              addBorderRadiusAndSpacingBetweenView: true,
+              showScreenSharingFullscreenModeToggleButtonRules:
+              ZegoShowFullscreenModeToggleButtonRules.alwaysShow,
+              showNewScreenSharingViewInFullscreenMode: false,
+          ))// Set the layout to gallery mode. and configure the [showNewScreenSharingViewInFullscreenMode] and [showScreenSharingFullscreenModeToggleButtonRules].
+          ..bottomMenuBarConfig = (ZegoBottomMenuBarConfig(
+              extendButtons: [
+               /* ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: const Size(40, 40), backgroundColor: const Color(0xffffffff).withOpacity(0.6),
+                    shape: const CircleBorder(),
+                  ),
+                  onPressed: () {
+                      startRecord(fileName: "eren");
+                  },
+                  child: Icon(customIcons[0]),
+                ),*/
+                /*ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: const Size(40, 40), backgroundColor: const Color(0xffffffff).withOpacity(0.6),
+                    shape: const CircleBorder(),
+                  ),
+                  onPressed: () {
+                    stopRecord();
+                  },
+                  child: Icon(customIcons[6]),
+                ),*/
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    fixedSize: const Size(60, 60), backgroundColor: const Color(0xffffffff).withOpacity(0.6),
+                    fixedSize: const Size(40, 40), backgroundColor: const Color(0xffffffff).withOpacity(0.6),
                     shape: const CircleBorder(),
                   ),
                   onPressed: () {
@@ -63,65 +179,124 @@ class VideoConferencePageState extends State<VideoConferencePage> {
                   },
                   child: Icon(customIcons[1]),
                 ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  fixedSize: const Size(60, 60), backgroundColor: const Color(0xffffffff).withOpacity(0.6),
-                  shape: const CircleBorder(),
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                    return Abacus();
-                  }));
-                },
-                child: Icon(customIcons[2]),
-              ),
-            ],
-            buttons: [
-              ZegoMenuBarButtonName.toggleCameraButton,
-              ZegoMenuBarButtonName.toggleMicrophoneButton,
-              ZegoMenuBarButtonName.switchAudioOutputButton,
-              ZegoMenuBarButtonName.leaveButton,
-              ZegoMenuBarButtonName.switchCameraButton,
-              ZegoMenuBarButtonName.chatButton,
-            ],
-
-          ),
-          onLeaveConfirmation: (BuildContext context) async {
-            return await showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (BuildContext context) {
-                return Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: AlertDialog(
-                    backgroundColor: Color(0xff01953D),
-                    title: const Text("مغادرة الجلسة",
-                        style: TextStyle(color: Colors.white)),
-                    content: const Text(
-                        "هل أنت متأكد من رغبتك في مغادرة الجلسة؟",
-                        style: TextStyle(color: Colors.white)),
-                    actions: [
-                      ElevatedButton(
-                        child: const Text("تراجع",),
-                        onPressed: () => Navigator.of(context).pop(false),
-                      ),
-                      ElevatedButton(
-                        child: const Text("تأكيد"),
-                        onPressed: () => Navigator.of(context).pop(true),
-                      ),
-                    ],
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: const Size(40, 40), backgroundColor: const Color(0xffffffff).withOpacity(0.6),
+                    shape: const CircleBorder(),
                   ),
-                );
-              },
-            );
-          },
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                      return Abacus();
+                    }));
+                  },
+                  child: Icon(customIcons[2]),
+                ),
+
+                ElevatedButton(
+                  onPressed: () {
+                    Files();
+                  },
+                  child: Icon(customIcons[4]),
+                ),
+              ],
+              buttons: [
+                ZegoMenuBarButtonName.leaveButton,
+                ZegoMenuBarButtonName.toggleCameraButton,
+                ZegoMenuBarButtonName.toggleMicrophoneButton,
+                ZegoMenuBarButtonName.chatButton,
+                ZegoMenuBarButtonName.switchCameraButton,
+                ZegoMenuBarButtonName.switchAudioOutputButton,
+
+              ])..backgroundColor = Color(0xff00521e)
+          )
+                ..topMenuBarConfig = (
+                    ZegoTopMenuBarConfig()
+                      ..backgroundColor = Color(0xff00521e)
+            )
+            ..memberListConfig = ZegoMemberListConfig(
+              showMicrophoneState: true,
+              showCameraState: true,)
+
+            // Add a screen sharing toggle button.
+            ..notificationViewConfig = ZegoInRoomNotificationViewConfig(notifyUserLeave: true, userJoinItemBuilder: (context, user, extraInfo) => Container(color: Colors.green,child: Text('${widget.user['name']} انضم للجلسة ', style: TextStyle(color: Colors.white),)), userLeaveItemBuilder: (context, user, extraInfo) => Container(color: Colors.red,child: Text('${widget.user['name']} غادر الجلسة ', style: TextStyle(color: Colors.white),)),itemBuilder: (context, message, extraInfo) => Container(color: Colors.green,child: Text('${widget.user['status']}', style: TextStyle(color: Colors.white),)),)
+            ..rootNavigator = false
+            ..useSpeakerWhenJoining = true
+            ..turnOnMicrophoneWhenJoining = false
+            ..turnOnCameraWhenJoining = false
         ),
       ),
 
     );
   }
 }
+/*AlertDialog(
+backgroundColor: Color(0xff01953D),
+title: const Text("مغادرة الجلسة",
+style: TextStyle(color: Colors.white)),
+content: const Text(
+"هل أنت متأكد من رغبتك في مغادرة الجلسة؟",
+style: TextStyle(color: Colors.white)),
+actions: [
+ElevatedButton(
+child: const Text("تراجع",),
+onPressed: () => Navigator.of(context).pop(false),
+),
+ElevatedButton(
+child: const Text("تأكيد"),
+onPressed: () => Navigator.of(context).pop(true),
+),
+],
+),*/
+/*turnOnCameraWhenJoining: false,
+turnOnMicrophoneWhenJoining: false,
+useSpeakerWhenJoining: true,*/
+/*bottomMenuBarConfig: ZegoBottomMenuBarConfig(
 
+maxCount: 5,
+extendButtons: [
+ElevatedButton(
+style: ElevatedButton.styleFrom(
+fixedSize: const Size(60, 60), backgroundColor: const Color(0xffffffff).withOpacity(0.6),
+shape: const CircleBorder(),
+),
+onPressed: () {
+Navigator.of(context).push(MaterialPageRoute(builder: (context){
+return DrawingPage();
+}));
+},
+child: Icon(customIcons[1]),
+),
+ElevatedButton(
+style: ElevatedButton.styleFrom(
+fixedSize: const Size(60, 60), backgroundColor: const Color(0xffffffff).withOpacity(0.6),
+shape: const CircleBorder(),
+),
+onPressed: () {
+Navigator.of(context).push(MaterialPageRoute(builder: (context){
+return Abacus();
+}));
+},
+child: Icon(customIcons[2]),
+),
+
+ElevatedButton(
+onPressed: () {
+zego.ZegoMediaPlayer(size: Size.square(20),canControl: true,isMovable: true,playIcon: Icon(customIcons[4]),filePathOrURL: "www.google.com",);
+},
+child: Icon(customIcons[4]),
+),
+],
+buttons: [
+ZegoMenuBarButtonName.toggleCameraButton,
+ZegoMenuBarButtonName.toggleMicrophoneButton,
+ZegoMenuBarButtonName.switchAudioOutputButton,
+ZegoMenuBarButtonName.leaveButton,
+ZegoMenuBarButtonName.switchCameraButton,
+ZegoMenuBarButtonName.chatButton,
+ZegoMenuBarButtonName.toggleScreenSharingButton,
+],
+
+),*/
 /*class VideoConferencePageState extends State<VideoConferencePage> {
   /*final serverText = TextEditingController();
   final roomText = TextEditingController(text: "omni_room_sample_1234");

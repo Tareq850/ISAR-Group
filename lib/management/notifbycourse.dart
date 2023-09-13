@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -22,13 +20,10 @@ class NotificationCourse extends StatefulWidget {
 class NotificationCourseState extends State<NotificationCourse> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final String _serverToken =
-      "AAAAZS7Rjuo:APA91bGnYS0IT1ABn3nne49G0TV1428f7LO91K5LcVW9cglqA2l88mCpt3-ZCtK-kej1MpWbrWnzMf8PaAeDhSGoqPjEeJTwIGkC4odtulnHNtV3ju1ZCVZi1PtdhwSG7qXy5pE-5yc4";
-
+      "AAAAXxgI6AE:APA91bFXM8VbyTERv879mnyxu1Mx3Gzoe9pmWroLPXxBoXZmJXDbxvjGtuMlm70pk2nl63c_V6pAcIASvlKdGCAcdSY4kXA_tRewDjKAzRIJbri-44xHMiXBLDNCI_saXcNeVZs6IvuH";
   String _title = "";
   String _body = "";
-
   String _selectedType = "اختر فئة";
-
   Future<void> _sendNotification(String title, String body, String type) async {
     final response = await http.post(
       Uri.parse("https://fcm.googleapis.com/fcm/send"),
@@ -200,8 +195,11 @@ class NotificationCourseState extends State<NotificationCourse> {
                                         );
                                       },
                                     );
-                                    await _sendNotification(_title, _body, widget.id);
-                                    await prov.sendNotification(_title, _body, widget.info['course_name'], DateTime.now());
+                                    //print("${widget.id.toString().trim()}.................................................");
+                                    await _sendNotification(_title, _body, widget.id.toString());
+
+
+                                    //await prov.sendNotification(_title, _body, widget.info['course_name'], DateTime.now());
                                     Navigator.of(context).pushNamed('home');
                                   }
                                 },

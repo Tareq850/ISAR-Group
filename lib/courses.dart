@@ -7,6 +7,7 @@ import 'package:fluttapp/student/regester.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'exams.dart';
 import 'management/notifbycourse.dart';
 import 'management/stucourse.dart';
 
@@ -53,7 +54,7 @@ class ViewssState extends State<Viewss>{
                       shrinkWrap: true,
                       itemCount: snapshot.data?.docs.length,
                       itemBuilder: (context, i){
-                        if(snapshot.data?.docs[i]['type'] == "مدير"){
+                        if(snapshot.data?.docs[i]['type'] == "مدير" || snapshot.data?.docs[i]['type'] == "معلم"){
                           if(widget.cours['status'] == true){
                             final data = widget.cours['startdate']as Timestamp;
                             final dateTime = data.toDate();
@@ -113,6 +114,18 @@ class ViewssState extends State<Viewss>{
                                               return StudentCourse(widget.cours, widget.id);
                                             }));
                                           },
+                                        ),
+                                        Visibility(
+                                          visible: widget.cours['status'] == true? true : false,
+                                          child: ListTile(
+                                            title: Text("الاختبارات",style: TextStyle(color: Colors.black87)),
+                                            leading: const Icon(FontAwesomeIcons.pencil),
+                                            onTap: (){
+                                              Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                                return Exam(widget.cours, widget.id, snapshot.data!.docs[i].data(), snapshot.data!.docs[i].id);
+                                              }));
+                                            },
+                                          ),
                                         ),
                                         const SizedBox(height: 4,),
                                         ListTile(
@@ -294,6 +307,18 @@ class ViewssState extends State<Viewss>{
                                           title: Text(" عدد أيام الدورة: ${widget.cours['number_days']}",style: TextStyle(color: Colors.black87)),
                                           leading: const Icon(FontAwesomeIcons.accusoft),
                                         ),
+                                        Visibility(
+                                          visible: widget.cours['status'] == true? true : false,
+                                          child: ListTile(
+                                            title: Text("الاختبارات",style: TextStyle(color: Colors.black87)),
+                                            leading: const Icon(FontAwesomeIcons.pencil),
+                                            onTap: (){
+                                              Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                                return Exam(widget.cours, widget.id, snapshot.data!.docs[i].data(), snapshot.data!.docs[i].id);
+                                              }));
+                                            },
+                                          ),
+                                        ),
                                       ],
                                     )),
 
@@ -385,6 +410,18 @@ class ViewssState extends State<Viewss>{
                                           title: Text(" عدد أيام الدورة: ${widget.cours['number_days']}",style: TextStyle(color: Colors.black87)),
                                           leading: const Icon(FontAwesomeIcons.accusoft),
                                         ),
+                                        Visibility(
+                                          visible: widget.cours['status'] == true? true : false,
+                                          child: ListTile(
+                                            title: Text("الاختبارات",style: TextStyle(color: Colors.black87)),
+                                            leading: const Icon(FontAwesomeIcons.pencil),
+                                            onTap: (){
+                                              Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                                return Exam(widget.cours, widget.id, snapshot.data!.docs[i].data(), snapshot.data!.docs[i].id);
+                                              }));
+                                            },
+                                          ),
+                                        ),
                                         ListTile(
                                           tileColor: const Color(0xffeeeeee),
                                           title: const Text("اضغط للتسجيل بالدورة",style: TextStyle(color: Colors.black87)),
@@ -395,14 +432,7 @@ class ViewssState extends State<Viewss>{
                                             }));
                                           },
                                         ),
-                                        ListTile(
-                                          tileColor: const Color(0xffeeeeee),
-                                          title: const Text("اضغط للاستفسار عن موعد بدء الدورة",style: TextStyle(color: Colors.black87)),
-                                          leading: const Icon(FontAwesomeIcons.penToSquare),
-                                          onTap: (){
 
-                                          },
-                                        ),
                                       ],
                                     )),
 

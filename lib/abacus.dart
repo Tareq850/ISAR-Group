@@ -13,7 +13,7 @@ class _AbacusState extends State<Abacus> {
   List<double> _yPositions4 = [0.0, 0.0, 0.0, 0.0];
   List<double> _yPositions5 = [0.0, 0.0, 0.0, 0.0];
   List<double> _yPositions6 = [0.0, 0.0, 0.0, 0.0];
-  List<double> _RPositions = [0.0];
+  List<double> _RPositions1 = [0.0];
   List<double> _RPositions2 = [0.0];
   List<double> _RPositions3 = [0.0];
   List<double> _RPositions4 = [0.0];
@@ -33,7 +33,7 @@ class _AbacusState extends State<Abacus> {
       _yPositions4 = List.from(_originalYPositions);
       _yPositions5 = List.from(_originalYPositions);
       _yPositions6 = List.from(_originalYPositions);
-      _RPositions  = List.from(_originalYPositions1);
+      _RPositions1  = List.from(_originalYPositions1);
       _RPositions2  = List.from(_originalYPositions1);
       _RPositions3  = List.from(_originalYPositions1);
       _RPositions4  = List.from(_originalYPositions1);
@@ -74,9 +74,9 @@ class _AbacusState extends State<Abacus> {
         .snapshots()
         .listen((snapshot) {
       if (snapshot.exists) {
-        double newY = snapshot.data()?['yPosition'];
+        var newY = snapshot.data()?['yPosition'];
         setState(() {
-          _RPositions[0] = newY;
+          _RPositions1[0] = newY;
         });
       }
     });
@@ -86,9 +86,9 @@ class _AbacusState extends State<Abacus> {
         .snapshots()
         .listen((snapshot) {
       if (snapshot.exists) {
-        double newY = snapshot.data()?['yPosition'];
+        var newY = snapshot.data()?['yPosition'];
         setState(() {
-          _RPositions[0] = newY;
+          _RPositions2[0] = newY;
         });
       }
     });
@@ -98,9 +98,9 @@ class _AbacusState extends State<Abacus> {
         .snapshots()
         .listen((snapshot) {
       if (snapshot.exists) {
-        double newY = snapshot.data()?['yPosition'];
+        var newY = snapshot.data()?['yPosition'];
         setState(() {
-          _RPositions[0] = newY;
+          _RPositions3[0] = newY;
         });
       }
     });
@@ -110,9 +110,9 @@ class _AbacusState extends State<Abacus> {
         .snapshots()
         .listen((snapshot) {
       if (snapshot.exists) {
-        double newY = snapshot.data()?['yPosition'];
+        var newY = snapshot.data()?['yPosition'];
         setState(() {
-          _RPositions[0] = newY;
+          _RPositions4[0] = newY;
         });
       }
     });
@@ -122,9 +122,9 @@ class _AbacusState extends State<Abacus> {
         .snapshots()
         .listen((snapshot) {
       if (snapshot.exists) {
-        double newY = snapshot.data()?['yPosition'];
+        var newY = snapshot.data()?['yPosition'];
         setState(() {
-          _RPositions[0] = newY;
+          _RPositions5[0] = newY;
         });
       }
     });
@@ -134,9 +134,9 @@ class _AbacusState extends State<Abacus> {
         .snapshots()
         .listen((snapshot) {
       if (snapshot.exists) {
-        double newY = snapshot.data()?['yPosition'];
+        var newY = snapshot.data()?['yPosition'];
         setState(() {
-          _RPositions[0] = newY;
+          _RPositions6[0] = newY;
         });
       }
     });
@@ -178,7 +178,7 @@ class _AbacusState extends State<Abacus> {
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 10.sp),
                   width: 500.sp,
-                  height: 210.sp,
+                  height: 200.sp,
                   decoration: BoxDecoration(
                       border: Border.all(width: 10.sp, color: Colors.black87),
                       borderRadius: BorderRadius.all(Radius.circular(20.sp))
@@ -192,24 +192,24 @@ class _AbacusState extends State<Abacus> {
                           GestureDetector(
                             onPanStart: (details) {},
                             onPanUpdate: (details) async {
-                              double newY = _RPositions[0].sp + details.delta.dy;
+                              double newY = _RPositions1[0].sp + details.delta.dy;
                               if (newY <= maxAllowedY2 && newY >= minAllowedY) {
                                 setState(() {
-                                  _RPositions[0] = newY;
+                                  _RPositions1[0] = newY;
                                 });
                                 await FirebaseFirestore.instance
                                     .collection(
                                     'positions') // اسم المجموعة في Firebase
                                     .doc('position1') // اسم الوثيقة في Firebase
-                                    .update({'yPosition': newY.floor()});
+                                    .update({'yPosition': newY});
                               }
                             },
                             onPanEnd: (details) {},
                             child: Transform.translate(
-                              offset: Offset(0.sp, _RPositions[0].sp),
+                              offset: Offset(0.sp, _RPositions1[0].sp),
                               child: Container(
                                 width: 35.sp,
-                                height: 25.sp,
+                                height: 20.sp,
                                 decoration: BoxDecoration(
                                     color: Colors.red,
                                     border: Border.all(width: 1.sp),
@@ -229,15 +229,15 @@ class _AbacusState extends State<Abacus> {
                                     .collection(
                                     'positions') // اسم المجموعة في Firebase
                                     .doc('position2') // اسم الوثيقة في Firebase
-                                    .update({'yPosition': newY.floor()});
+                                    .update({'yPosition': newY});
                               }
                             },
                             onPanEnd: (details) {},
                             child: Transform.translate(
-                              offset: Offset(0.sp.sp, _RPositions2[0].sp),
+                              offset: Offset(0.sp, _RPositions2[0].sp),
                               child: Container(
                                 width: 35.sp,
-                                height: 25.sp,
+                                height: 20.sp,
                                 decoration: BoxDecoration(
                                     color: Colors.green,
                                     border: Border.all(width: 1.sp),
@@ -257,7 +257,7 @@ class _AbacusState extends State<Abacus> {
                                     .collection(
                                     'positions') // اسم المجموعة في Firebase
                                     .doc('position3') // اسم الوثيقة في Firebase
-                                    .update({'yPosition': newY.floor()});
+                                    .update({'yPosition': newY});
                               }
                             },
                             onPanEnd: (details) {},
@@ -265,7 +265,7 @@ class _AbacusState extends State<Abacus> {
                               offset: Offset(0.sp, _RPositions3[0].sp),
                               child: Container(
                                 width: 35.sp,
-                                height: 25.sp,
+                                height: 20.sp,
                                 decoration: BoxDecoration(
                                     color: Colors.yellow,
                                     border: Border.all(width: 1.sp),
@@ -285,7 +285,7 @@ class _AbacusState extends State<Abacus> {
                                     .collection(
                                     'positions') // اسم المجموعة في Firebase
                                     .doc('position4') // اسم الوثيقة في Firebase
-                                    .update({'yPosition': newY.floor()});
+                                    .update({'yPosition': newY});
                               }
                             },
                             onPanEnd: (details) {},
@@ -293,7 +293,7 @@ class _AbacusState extends State<Abacus> {
                               offset: Offset(0.sp, _RPositions4[0].sp),
                               child: Container(
                                 width: 35.sp,
-                                height: 25.sp,
+                                height: 20.sp,
                                 decoration: BoxDecoration(
                                     color: Colors.deepPurpleAccent,
                                     border: Border.all(width: 1.sp),
@@ -313,7 +313,7 @@ class _AbacusState extends State<Abacus> {
                                     .collection(
                                     'positions') // اسم المجموعة في Firebase
                                     .doc('position5') // اسم الوثيقة في Firebase
-                                    .update({'yPosition': newY.floor()});
+                                    .update({'yPosition': newY});
                               }
                             },
                             onPanEnd: (details) {},
@@ -321,7 +321,7 @@ class _AbacusState extends State<Abacus> {
                               offset: Offset(0.sp, _RPositions5[0].sp),
                               child: Container(
                                 width: 35.sp,
-                                height: 25.sp,
+                                height: 20.sp,
                                 decoration: BoxDecoration(
                                     color: Colors.deepOrange,
                                     border: Border.all(width: 1.sp),
@@ -341,7 +341,7 @@ class _AbacusState extends State<Abacus> {
                                     .collection(
                                     'positions') // اسم المجموعة في Firebase
                                     .doc('position6') // اسم الوثيقة في Firebase
-                                    .update({'yPosition': newY.floor()});
+                                    .update({'yPosition': newY});
                               }
                             },
                             onPanEnd: (details) {},
@@ -349,7 +349,7 @@ class _AbacusState extends State<Abacus> {
                               offset: Offset(0.sp, _RPositions6[0].sp),
                               child: Container(
                                 width: 35.sp,
-                                height: 25.sp,
+                                height: 20.sp,
                                 decoration: BoxDecoration(
                                     color: Colors.blue,
                                     border: Border.all(width: 1.sp),
@@ -407,7 +407,7 @@ class _AbacusState extends State<Abacus> {
                                   offset: Offset(0.sp, _yPositions[index].sp),
                                   child: Container(
                                     width: 35.sp,
-                                    height: 25.sp,
+                                    height: 20.sp,
                                     decoration: BoxDecoration(
                                         color: Colors.red,
                                         border: Border.all(width: 1.sp),
@@ -464,7 +464,7 @@ class _AbacusState extends State<Abacus> {
                                   offset: Offset(0.sp, _yPositions2[index].sp),
                                   child: Container(
                                     width: 35.sp,
-                                    height: 25.sp,
+                                    height: 20.sp,
                                     decoration: BoxDecoration(
                                         color: Colors.green,
                                         border: Border.all(width: 1.sp),
@@ -521,7 +521,7 @@ class _AbacusState extends State<Abacus> {
                                   offset: Offset(0.sp, _yPositions3[index].sp),
                                   child: Container(
                                     width: 35.sp,
-                                    height: 25.sp,
+                                    height: 20.sp,
                                     decoration: BoxDecoration(
                                         color: Colors.yellow,
                                         border: Border.all(width: 1.sp),
@@ -578,7 +578,7 @@ class _AbacusState extends State<Abacus> {
                                   offset: Offset(0.sp, _yPositions4[index].sp),
                                   child: Container(
                                     width: 35.sp,
-                                    height: 25.sp,
+                                    height: 20.sp,
                                     decoration: BoxDecoration(
                                         color: Colors.deepPurpleAccent,
                                         border: Border.all(width: 1.sp),
@@ -635,7 +635,7 @@ class _AbacusState extends State<Abacus> {
                                   offset: Offset(0.sp, _yPositions5[index].sp),
                                   child: Container(
                                     width: 35.sp,
-                                    height: 25.sp,
+                                    height: 20.sp,
                                     decoration: BoxDecoration(
                                         color: Colors.deepOrange,
                                         border: Border.all(width: 1.sp),
@@ -692,7 +692,7 @@ class _AbacusState extends State<Abacus> {
                                   offset: Offset(0.sp, _yPositions6[index].sp),
                                   child: Container(
                                     width: 35.sp,
-                                    height: 25.sp,
+                                    height: 20.sp,
                                     decoration: BoxDecoration(
                                         color: Colors.blue,
                                         border: Border.all(width: 1.sp),

@@ -52,7 +52,7 @@ class StateHomePage extends State<HomePage>{
     );
     Text(' منح المستخدم الإذن: ${settings.authorizationStatus}');
   }
- basicStatusCheck(NewVersion newVersion) {
+  basicStatusCheck(NewVersion newVersion) {
     newVersion.showAlertIfNecessary(context: context);
   }
   advancedStatusCheck(NewVersion newVersion) async {
@@ -332,6 +332,7 @@ class StateHomePage extends State<HomePage>{
                                         ],
                                       );
                                     }
+                                    return null;
                                   });
                             }
                             return const Center(child: CircularProgressIndicator());
@@ -485,7 +486,7 @@ class StateHomePage extends State<HomePage>{
       child: SafeArea(
         child: Scaffold(
             appBar: AppBar(
-              title: const Text("ايثار التعليمية"),
+              title: const Text("منصة طريق النجاح"),
               centerTitle: true,
               backgroundColor: Theme.of(context).colorScheme.primary,
               actions: [
@@ -537,6 +538,8 @@ class StateHomePage extends State<HomePage>{
                                   username = snapshot.data?.docs[i]['name'];
                                   if(snapshot.data?.docs[i]['type'] == "مدير"){
                                     Prov.setIsManager(true);
+                                    FirebaseMessaging.instance.unsubscribeFromTopic('teacher');
+                                    FirebaseMessaging.instance.unsubscribeFromTopic('student');
                                     FirebaseMessaging.instance.subscribeToTopic('manager');
                                     return  Column(
                                       children: [
@@ -625,6 +628,8 @@ class StateHomePage extends State<HomePage>{
                                   }
                                   if (snapshot.data!.docs[i]['type'] == "طالب"){
                                     Prov.setIsManager(false);
+                                    FirebaseMessaging.instance.unsubscribeFromTopic('manager');
+                                    FirebaseMessaging.instance.unsubscribeFromTopic('teacher');
                                     FirebaseMessaging.instance.subscribeToTopic('student');
                                     return  Column(
                                       children: [
@@ -677,6 +682,8 @@ class StateHomePage extends State<HomePage>{
                                   }
                                   else{
                                     Prov.setIsManager(false);
+                                    FirebaseMessaging.instance.unsubscribeFromTopic('student');
+                                    FirebaseMessaging.instance.unsubscribeFromTopic('manager');
                                     FirebaseMessaging.instance.subscribeToTopic('teacher');
                                     return  Column(
                                       children: [
@@ -691,7 +698,7 @@ class StateHomePage extends State<HomePage>{
                                         Directionality(
                                           textDirection: TextDirection.rtl,
                                           child: ListTile(
-                                            title: Text("كورساتي", style: TextStyle(color: Theme.of(context).colorScheme.primary,),),
+                                            title: Text("دوراتي", style: TextStyle(color: Theme.of(context).colorScheme.primary,),),
                                             leading: Icon(FontAwesomeIcons.chalkboardUser, color: Theme.of(context).colorScheme.primary,),
                                             onTap: (){
                                               Navigator.of(context).push(MaterialPageRoute(builder: (context){

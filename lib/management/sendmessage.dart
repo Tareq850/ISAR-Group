@@ -22,7 +22,7 @@ class SendNotification extends StatefulWidget {
 class SendNotificationState extends State<SendNotification> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final String _serverToken =
-      "AAAAZS7Rjuo:APA91bGnYS0IT1ABn3nne49G0TV1428f7LO91K5LcVW9cglqA2l88mCpt3-ZCtK-kej1MpWbrWnzMf8PaAeDhSGoqPjEeJTwIGkC4odtulnHNtV3ju1ZCVZi1PtdhwSG7qXy5pE-5yc4";
+      "AAAAXxgI6AE:APA91bFXM8VbyTERv879mnyxu1Mx3Gzoe9pmWroLPXxBoXZmJXDbxvjGtuMlm70pk2nl63c_V6pAcIASvlKdGCAcdSY4kXA_tRewDjKAzRIJbri-44xHMiXBLDNCI_saXcNeVZs6IvuH";
 
   String _title = "";
   String _body = "";
@@ -271,8 +271,9 @@ class SendNotificationState extends State<SendNotification> {
                                               );
                                             },
                                           );
-                                          await _sendNotification(_title, _body, _type);
-                                          await prov.sendNotification(_title, _body, _type, DateTime.now());
+                                          print("$_selectedType....................................");
+                                          await _sendNotification(_title, _body, _selectedType);
+                                          //await prov.sendNotification(_title, _body, _type, DateTime.now());
                                           Navigator.of(context).pushNamed('home');
                                         }
                                       },

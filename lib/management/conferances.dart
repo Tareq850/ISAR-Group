@@ -174,6 +174,16 @@ class ConferancesState extends State<Conferances>{
                 })):
         widget.userinfo['type'] == "معلم"?
         Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: (){
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context){
+                      return AddConferance(widget.userinfo, widget.id);
+                    }));
+              },
+              backgroundColor: Theme.of(context).colorScheme.background,
+              child: const Icon(Icons.add),
+            ),
           appBar: AppBar(
             title: Text("قائمة الجلسات"),
             backgroundColor: Theme.of(context).colorScheme.primary,

@@ -19,6 +19,7 @@ class AuthP extends ChangeNotifier{
   CollectionReference course = FirebaseFirestore.instance.collection('courses');
   CollectionReference student = FirebaseFirestore.instance.collection('student');
   CollectionReference conferance = FirebaseFirestore.instance.collection('conferance');
+  CollectionReference exam = FirebaseFirestore.instance.collection('exam');
   final CollectionReference notificationsCollection = FirebaseFirestore.instance.collection('Notifications');
   late FirebaseAuth _auth;
   late User _user;
@@ -286,6 +287,26 @@ class AuthP extends ChangeNotifier{
   regesterUpCourse(id, String status) async {
     await student.doc(id).update({
       'status': status,
+    });
+    notifyListeners();
+  }
+  add_Exam(String c_name, String te_name, date, exam_url, result_url) async {
+    _authStatus = AuthStatus.authenticated;
+    await exam.add({
+      'course_name' : c_name,
+      'teatcher_name' : te_name,
+      'date': date,
+      'exam_url' : exam_url,
+      'result_url' : result_url
+    });
+    notifyListeners();
+  }
+  update_Exam(id , date , exam_url, result_url) async {
+    _authStatus = AuthStatus.authenticated;
+    await exam.doc(id).update({
+      'date': date,
+      'exam_url' : exam_url,
+      'result_url' : result_url
     });
     notifyListeners();
   }

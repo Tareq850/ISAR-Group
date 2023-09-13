@@ -187,7 +187,7 @@ class CheckState extends State<Check> {
                                     Navigator.of(context).pushReplacementNamed("home");
                                     var bar = const SnackBar(content: Text("سيتم تثبيت التسجيل بعد الدفع"));
                                     ScaffoldMessenger.of(context).showSnackBar(bar);
-                                    await FirebaseMessaging.instance.subscribeToTopic("${widget.id}");
+                                    await FirebaseMessaging.instance.subscribeToTopic(widget.id.toString().trim());
                                     await Prov.users.where("userId", isEqualTo: Prov.user.uid).get().then((QuerySnapshot snapshot) {
                                       snapshot.docs.forEach((doc) {
                                         name = doc["name"];
@@ -214,6 +214,8 @@ class CheckState extends State<Check> {
                                   },
                                 ).show();
                               }else{
+                                await FirebaseMessaging.instance.subscribeToTopic(widget.id.toString());
+                                print("${widget.id.toString().trim()}..............................................");
                                 Navigator.of(context).pushReplacementNamed("home");
                                 var bar = const SnackBar(content: Text("انت مسجل بالدورة من قبل"));
                                 ScaffoldMessenger.of(context).showSnackBar(bar);
