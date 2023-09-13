@@ -1,4 +1,4 @@
-target 'fluttapp'
+
 project 'Runner', {
   'Debug' => :debug,
   'Profile' => :release,
