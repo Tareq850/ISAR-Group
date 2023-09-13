@@ -1,2 +1,6 @@
 target 'fluttapp'
-pod 'AFNetworking', '~> 1.0'
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
